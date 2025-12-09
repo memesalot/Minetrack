@@ -15,7 +15,7 @@
     "ghcr.io/parkervcp/yolks:nodejs_21": "ghcr.io/parkervcp/yolks:nodejs_21"
   },
   "file_denylist": [],
-  "startup": "if [ ! -d node_modules/winston ]; then echo 'Installing dependencies...' && npm install --build-from-source; fi; if [ ! -f dist/index.html ]; then echo 'Building frontend...' && npm run build; fi; node main.js",
+  "startup": "rm -rf dist; if [ ! -d node_modules/winston ]; then echo 'Installing dependencies...' && npm install --build-from-source; fi; echo 'Building frontend...' && npm run build; node main.js",
   "config": {
     "files": "{\r\n    \"config.json\": {\r\n        \"parser\": \"json\",\r\n        \"find\": {\r\n            \"site.port\": \"{{server.build.default.port}}\",\r\n            \"site.ip\": \"0.0.0.0\",\r\n            \"logToDatabase\": \"{{env.LOG_TO_DATABASE == 'true' ? true : false}}\"\r\n        }\r\n    }\r\n}",
     "startup": "{\r\n    \"done\": \"Started on\"\r\n}",
