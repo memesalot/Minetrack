@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Cryptkeeper/Minetrack.git"
+    "url": "git+https://github.com/memesalot/Minetrack.git"
   },
   "keywords": [
     "minetrack"
@@ -22,9 +22,9 @@
   "author": "Nick Krecklow <hello@npm.nklow.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Cryptkeeper/Minetrack/issues"
+    "url": "https://github.com/memesalot/Minetrack/issues"
   },
-  "homepage": "https://github.com/Cryptkeeper/Minetrack#README",
+  "homepage": "https://github.com/memesalot/Minetrack#readme",
   "engines": {
     "node": ">=14.0.0"
   },
@@ -48,7 +48,7 @@
     "parcel": "^2.8.0"
   },
   "scripts": {
-    "build": "eslint assets/js/*.js && parcel build assets/html/index.html --dist-dir dist",
+    "build": "eslint assets/js/*.js --rule 'eol-last: 0' && parcel build assets/html/index.html --dist-dir dist",
     "dev": "parcel build assets/html/index.html --no-optimize --dist-dir dist"
   },
   "optionalDependencies": {

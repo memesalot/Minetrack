@@ -3,7 +3,7 @@ Minetrack 5 is the first of several upcoming updates designed to address several
 
 ## Upgrading Minetrack 5
 1. Stop any running instance of Minetrack.
-2. If you've cloned the repository, use `git clone https://github.com/Cryptkeeper/Minetrack Minetrack5`. If you've manually downloaded a release or an archive of the repository, download a fresh copy and extract it into a directory named "Minetrack5".
+2. If you've cloned the repository, use `git clone https://github.com/memesalot/Minetrack Minetrack5`. If you've manually downloaded a release or an archive of the repository, download a fresh copy and extract it into a directory named "Minetrack5".
 3. Install Node 12.4.0+ (check your version with node -v)
 4. Open the directory and execute `npm install --build-from-source`. This will install updated (and new) dependencies needed by the program.
 5. If you have `logToDatabase: true` in your `config.json`, make sure to copy your `database.sql` file into the new directory, otherwise you will lose historical server activity and records.

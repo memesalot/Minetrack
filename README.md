@@ -3,7 +3,7 @@
 </p>
 
 # Minetrack
-Minetrack makes it easy to keep an eye on your favorite Minecraft servers. Simple and hackable, Minetrack easily runs on any hardware. Use it for monitoring, analytics, or just for fun. [Check it out](https://minetrack.me).
+Minetrack makes it easy to keep an eye on your favorite Minecraft servers. Simple and hackable, Minetrack easily runs on any hardware. Use it for monitoring, analytics, or just for fun. This fork lives at [github.com/memesalot/Minetrack](https://github.com/memesalot/Minetrack) and builds on the original work by [Nick Krecklow / Cryptkeeper](https://github.com/Cryptkeeper/Minetrack).
 
 ### This project is not actively supported!
 This project is not actively supported. Pull requests will be reviewed and merged (if accepted), but issues _might_ not be addressed outside of fixes provided by community members. Please share any improvements or fixes you've made so everyone can benefit from them.
@@ -41,17 +41,23 @@ For updates and release notes, please read the [CHANGELOG](docs/CHANGELOG.md).
 **Migrating to Minetrack 5?** See the [migration guide](docs/MIGRATING.md).
 
 ## Installation
-1. Node 12.4.0+ is required (you can check your version using `node -v`)
-2. Make sure everything is correct in ```config.json```.
-3. Add/remove servers by editing the ```servers.json``` file
-4. Run ```npm install```
-5. Run ```npm run build``` (this bundles `assets/` into `dist/`)
-6. Run ```node main.js``` to boot the system (may need sudo!)
+1. Node 14+ is required (we use better-sqlite3, which ships native bindings).
+2. Configure `config.json`:
+   - `database.type`: `sqlite` (default) or `mysql`
+   - `database.sqlite.filename`: SQLite file name
+   - `database.mysql.{host,port,user,password,database,connectionLimit}`: MySQL settings
+   - `logToDatabase`: true/false (enable historical graph logging)
+   - `trustProxy`: set to true when running behind Nginx/Cloudflare so real client IPs are logged
+   - `allowedOrigins`: optional allowlist for WebSocket origins
+   - `connectionLimits`, `wsRateLimits`, `wsMaxPayload`, `httpTimeout`, `httpHeadersTimeout`, `httpKeepAliveTimeout`: operational hardening
+3. Add/remove servers by editing `servers.json`.
+4. Run `npm install` (native build will compile better-sqlite3).
+5. Run `npm run build` (bundles `assets/` into `dist/`).
+6. Run `node main.js` to boot the system.
 
 (There's also ```install.sh``` and ```start.sh```, but they may not work for your OS.)
 
-Database logging is disabled by default. You can enable it in ```config.json``` by setting ```logToDatabase``` to true.
-This requires sqlite3 drivers to be installed.
+Database logging is controlled by `logToDatabase` and the `database` block. For SQLite, no extra setup beyond the native build is required; for MySQL, ensure your credentials are correct and the database exists.
 
 ## Docker
 Minetrack can be built and run with Docker from this repository in several ways:
