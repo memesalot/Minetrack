@@ -1,3 +1,5 @@
+import { escapeHtml } from './util'
+
 export class SocketManager {
   constructor (app) {
     this._app = app
@@ -43,7 +45,16 @@ export class SocketManager {
     }
 
     this._webSocket.onmessage = (message) => {
-      const payload = JSON.parse(message.data)
+      let payload
+      try {
+        payload = JSON.parse(message.data)
+      } catch (e) {
+        return
+      }
+
+      if (!payload || typeof payload.message !== 'string') {
+        return
+      }
 
       switch (payload.message) {
         case 'init':
@@ -109,10 +120,11 @@ export class SocketManager {
             .sort()
             .forEach(serverName => {
               const serverRegistration = this._app.serverRegistry.getServerRegistration(serverName)
+              const safeServerName = escapeHtml(serverName)
 
               controlsHTML += `<td><label>
                 <input type="checkbox" class="graph-control" minetrack-server-id="${serverRegistration.serverId}" ${serverRegistration.isVisible ? 'checked' : ''}>
-                ${serverName}
+                ${safeServerName}
                 </label></td>`
 
               // Occasionally break table rows using a magic number

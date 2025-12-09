@@ -2,7 +2,7 @@ import uPlot from 'uplot'
 
 import { RelativeScale } from './scale'
 
-import { formatNumber, formatTimestampSeconds } from './util'
+import { formatNumber, formatTimestampSeconds, escapeHtml } from './util'
 import { uPlotTooltipPlugin } from './plugins'
 
 import { FAVORITE_SERVERS_STORAGE_KEY } from './favorites'
@@ -66,15 +66,24 @@ export class GraphDisplayManager {
       }
 
       // If only favorites mode is active, use the stored favorite servers data instead
-      let serverNames
+      let raw
       if (this._showOnlyFavorites) {
-        serverNames = localStorage.getItem(FAVORITE_SERVERS_STORAGE_KEY)
+        raw = localStorage.getItem(FAVORITE_SERVERS_STORAGE_KEY)
       } else {
-        serverNames = localStorage.getItem(HIDDEN_SERVERS_STORAGE_KEY)
+        raw = localStorage.getItem(HIDDEN_SERVERS_STORAGE_KEY)
       }
 
-      if (serverNames) {
-        serverNames = JSON.parse(serverNames)
+      if (raw) {
+        let serverNames
+        try {
+          serverNames = JSON.parse(raw)
+        } catch (e) {
+          return
+        }
+
+        if (!Array.isArray(serverNames)) {
+          return
+        }
 
         // Iterate over all active serverRegistrations
         // This merges saved state with current state to prevent desyncs
@@ -233,7 +242,7 @@ export class GraphDisplayManager {
               .map(serverRegistration => {
                 const point = this.getGraphDataPoint(serverRegistration.serverId, idx)
 
-                let serverName = serverRegistration.data.name
+                let serverName = escapeHtml(serverRegistration.data.name)
                 if (closestSeriesIndex === serverRegistration.getGraphDataIndex()) {
                   serverName = `<strong>${serverName}</strong>`
                 }

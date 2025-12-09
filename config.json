@@ -13,6 +13,36 @@
 	},
 	"logFailedPings": true,
 	"logToDatabase": false,
+	"database": {
+		"type": "sqlite",
+		"sqlite": {
+			"filename": "database.sql"
+		},
+		"mysql": {
+			"host": "localhost",
+			"port": 3306,
+			"user": "minetrack",
+			"password": "",
+			"database": "minetrack",
+			"connectionLimit": 10
+		}
+	},
 	"graphDuration": 86400000,
-	"serverGraphDuration": 180000
+	"serverGraphDuration": 180000,
+	"trustProxy": false,
+	"allowedOrigins": [],
+	"connectionLimits": {
+		"maxPerIp": 20,
+		"maxTotal": 500
+	},
+	"wsRateLimits": {
+		"maxMessagesPerWindow": 10,
+		"windowMs": 60000
+	},
+	"wsMaxPayload": 1024,
+	"httpTimeout": 30000,
+	"httpHeadersTimeout": 10000,
+	"httpKeepAliveTimeout": 5000,
+	"contentSecurityPolicy": "",
+	"_contentSecurityPolicy_example": "default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:"
 }

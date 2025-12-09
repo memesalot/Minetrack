@@ -7,9 +7,19 @@ export class FavoritesManager {
 
   loadLocalStorage () {
     if (typeof localStorage !== 'undefined') {
-      let serverNames = localStorage.getItem(FAVORITE_SERVERS_STORAGE_KEY)
-      if (serverNames) {
-        serverNames = JSON.parse(serverNames)
+      const raw = localStorage.getItem(FAVORITE_SERVERS_STORAGE_KEY)
+      if (raw) {
+        let serverNames
+        try {
+          serverNames = JSON.parse(raw)
+        } catch (e) {
+          localStorage.removeItem(FAVORITE_SERVERS_STORAGE_KEY)
+          return
+        }
+
+        if (!Array.isArray(serverNames)) {
+          return
+        }
 
         for (let i = 0; i < serverNames.length; i++) {
           const serverRegistration = this._app.serverRegistry.getServerRegistration(serverNames[i])

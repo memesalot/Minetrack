@@ -122,3 +122,12 @@ export function formatNumber (x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
   }
 }
+
+export function escapeHtml (value) {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}

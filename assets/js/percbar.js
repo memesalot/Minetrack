@@ -1,4 +1,4 @@
-import { formatNumber, formatPercent } from './util'
+import { formatNumber, formatPercent, escapeHtml } from './util'
 
 export class PercentageBar {
   constructor (app) {
@@ -56,10 +56,11 @@ export class PercentageBar {
   handleMouseOver = (event) => {
     const serverId = parseInt(event.target.getAttribute('minetrack-server-id'))
     const serverRegistration = this._app.serverRegistry.getServerRegistration(serverId)
+    const safeName = escapeHtml(serverRegistration.data.name)
 
     this._app.tooltip.set(event.target.offsetLeft, event.target.offsetTop, 10, this._parent.offsetTop + this._parent.offsetHeight + 10,
       `${typeof serverRegistration.rankIndex !== 'undefined' ? `#${serverRegistration.rankIndex + 1} ` : ''}
-      ${serverRegistration.data.name}<br>
+      ${safeName}<br>
       ${formatNumber(serverRegistration.playerCount)} Players<br>
       <strong>${formatPercent(serverRegistration.playerCount, this._app.getTotalPlayerCount())}</strong>`)
   }

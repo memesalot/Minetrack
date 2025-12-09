@@ -80,7 +80,10 @@ export class SortController {
     if (typeof localStorage !== 'undefined') {
       const sortOptionIndex = localStorage.getItem(SORT_OPTION_INDEX_STORAGE_KEY)
       if (sortOptionIndex) {
-        this._sortOptionIndex = parseInt(sortOptionIndex)
+        const parsed = parseInt(sortOptionIndex, 10)
+        if (!isNaN(parsed) && parsed >= 0 && parsed < SORT_OPTIONS.length) {
+          this._sortOptionIndex = parsed
+        }
       }
     }
   }
