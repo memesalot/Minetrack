@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  minetrack:
+    image: verycooldocker/minetrack:latest
+    container_name: minetrack
+    environment:
+      SITE_PORT: 8080
+      LOG_TO_DATABASE: "true"
+      DB_TYPE: sqlite
+      SQLITE_FILENAME: /data/database.sql
+      ALLOWED_ORIGINS: http://localhost:8080
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./config/config.json:/usr/src/minetrack/config.json:ro
+      - ./config/servers.json:/usr/src/minetrack/servers.json:ro
+      - minetrack_data:/data
+    restart: unless-stopped
+
+volumes:
+  minetrack_data:
+
