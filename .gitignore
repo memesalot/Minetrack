@@ -1,5 +1,6 @@
 # npm
 node_modules/
+package-lock.json
 
 # minetrack
 minetrack.log
@@ -14,3 +15,12 @@ database.sql-journal
 # parcel
 dist/
 .parcel-cache/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+Thumbs.db

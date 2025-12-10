@@ -1,6 +1,6 @@
 import ApexCharts from 'apexcharts'
 
-import { formatNumber, formatTimestampSeconds, escapeHtml } from './util'
+import { formatNumber } from './util'
 import { FAVORITE_SERVERS_STORAGE_KEY } from './favorites'
 
 const HIDDEN_SERVERS_STORAGE_KEY = 'minetrack_hidden_servers'

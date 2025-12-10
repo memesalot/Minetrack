@@ -1,7 +1,8 @@
 {
     "env": {
         "browser": true,
-        "es6": true
+        "es2021": true,
+        "node": true
     },
     "extends": [
         "standard"
@@ -11,9 +12,11 @@
         "SharedArrayBuffer": "readonly"
     },
     "parserOptions": {
-        "ecmaVersion": 2018
+        "ecmaVersion": "latest",
+        "sourceType": "module",
+        "requireConfigFile": false
     },
     "rules": {
     },
-    "parser": "babel-eslint"
+    "parser": "@babel/eslint-parser"
 }
