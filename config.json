@@ -27,7 +27,7 @@
 			"connectionLimit": 10
 		}
 	},
-	"graphDuration": 86400000,
+	"graphDuration": 43200000,
 	"serverGraphDuration": 180000,
 	"trustProxy": false,
 	"allowedOrigins": [],
@@ -43,6 +43,6 @@
 	"httpTimeout": 30000,
 	"httpHeadersTimeout": 10000,
 	"httpKeepAliveTimeout": 5000,
-	"contentSecurityPolicy": "",
+	"contentSecurityPolicy": "default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; script-src 'self'",
 	"_contentSecurityPolicy_example": "default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:"
 }

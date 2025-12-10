@@ -109,7 +109,7 @@ export class SortController {
     this._buttonElement.addEventListener('click', this.handleSortByButtonClick)
 
     // Show #sort-by element
-    this._buttonElement.style.display = 'inline-block'
+    this._buttonElement.style.display = 'flex'
   }
 
   handleSortByButtonClick = () => {

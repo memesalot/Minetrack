@@ -1,9 +1,6 @@
-import uPlot from 'uplot'
-
-import { RelativeScale } from './scale'
+import ApexCharts from 'apexcharts'
 
 import { formatNumber, formatTimestampSeconds, formatDate, formatMinecraftServerAddress, formatMinecraftVersions, escapeHtml } from './util'
-import { uPlotTooltipPlugin } from './plugins'
 
 import MISSING_FAVICON from 'url:../images/missing_favicon.svg'
 
@@ -45,8 +42,6 @@ export class ServerRegistry {
     this._serverIdsByName = []
     this._serverDataById = []
     this._registeredServers = []
-
-    // Reset modified DOM structures
     document.getElementById('server-list').innerHTML = ''
   }
 }
@@ -79,127 +74,105 @@ export class ServerRegistration {
   }
 
   buildPlotInstance () {
-    const tickCount = 4
+    const color = this.data.color || '#E9E581'
+    const seriesData = this._graphData[0].map((ts, i) => ({
+      x: ts * 1000,
+      y: this._graphData[1][i] ?? null
+    }))
 
-    // eslint-disable-next-line new-cap
-    this._plotInstance = new uPlot({
-      plugins: [
-        uPlotTooltipPlugin((pos, id) => {
-          if (pos) {
-            const playerCount = this._graphData[1][id]
-
-            if (typeof playerCount !== 'number') {
-              this._app.tooltip.hide()
-            } else {
-              this._app.tooltip.set(pos.left, pos.top, 10, 10, `${formatNumber(playerCount)} Players<br>${formatTimestampSeconds(this._graphData[0][id])}`)
-            }
-          } else {
-            this._app.tooltip.hide()
-          }
-        })
-      ],
-      height: 100,
-      width: 400,
-      cursor: {
-        y: false,
-        drag: {
-          setScale: false,
-          x: false,
-          y: false
+    const options = {
+      series: [{
+        name: 'Players',
+        data: seriesData
+      }],
+      chart: {
+        type: 'area',
+        height: 100,
+        sparkline: {
+          enabled: true
         },
-        sync: {
-          key: 'minetrack-server',
-          setSeries: true
+        animations: {
+          enabled: true,
+          easing: 'easeinout',
+          speed: 300
+        },
+        background: 'transparent'
+      },
+      colors: [color],
+      stroke: {
+        curve: 'smooth',
+        width: 2
+      },
+      fill: {
+        type: 'gradient',
+        gradient: {
+          shadeIntensity: 1,
+          opacityFrom: 0.5,
+          opacityTo: 0.05,
+          stops: [0, 90, 100]
         }
       },
-      series: [
-        {},
-        {
-          stroke: '#E9E581',
-          width: 2,
-          value: (_, raw) => `${formatNumber(raw)} Players`,
-          spanGaps: true,
-          points: {
-            show: false
-          }
-        }
-      ],
-      axes: [
-        {
-          show: false
+      tooltip: {
+        enabled: true,
+        theme: 'dark',
+        x: {
+          format: 'h:mm TT'
         },
-        {
-          ticks: {
-            show: false
-          },
-          font: '14px "Open Sans", sans-serif',
-          stroke: '#A3A3A3',
-          size: 55,
-          grid: {
-            stroke: '#333',
-            width: 1
-          },
-          split: () => {
-            const { scaledMin, scaledMax, scale } = RelativeScale.scale(this._graphData[1], tickCount)
-            const ticks = RelativeScale.generateTicks(scaledMin, scaledMax, scale)
-            return ticks
-          }
-        }
-      ],
-      scales: {
         y: {
-          auto: false,
-          range: () => {
-            const { scaledMin, scaledMax } = RelativeScale.scale(this._graphData[1], tickCount)
-            return [scaledMin, scaledMax]
-          }
+          formatter: (val) => val !== null ? `${formatNumber(val)} players` : 'N/A'
         }
       },
-      legend: {
-        show: false
+      xaxis: {
+        type: 'datetime'
+      },
+      yaxis: {
+        min: (min) => Math.max(0, min - 5),
+        max: (max) => max + 5
       }
-    }, this._graphData, document.getElementById(`chart_${this.serverId}`))
+    }
+
+    const container = document.getElementById(`chart_${this.serverId}`)
+    container.innerHTML = ''
+
+    this._chartInstance = new ApexCharts(container, options)
+    this._chartInstance.render()
   }
 
   handlePing (payload, timestamp) {
     if (typeof payload.playerCount === 'number') {
       this.playerCount = payload.playerCount
-
-      // Reset failed ping counter to ensure the next connection error
-      // doesn't instantly retrigger a layout change
       this._failedSequentialPings = 0
     } else {
-      // Attempt to retain a copy of the cached playerCount for up to N failed pings
-      // This prevents minor connection issues from constantly reshuffling the layout
       if (++this._failedSequentialPings > 5) {
         this.playerCount = 0
       }
     }
 
-    // Use payload.playerCount so nulls WILL be pushed into the graphing data
     this._graphData[0].push(timestamp)
     this._graphData[1].push(payload.playerCount)
 
-    // Trim graphData to within the max length by shifting out the leading elements
     for (const series of this._graphData) {
       if (series.length > this._app.publicConfig.serverGraphMaxLength) {
         series.shift()
       }
     }
 
-    // Redraw the plot instance
-    this._plotInstance.setData(this._graphData)
+    if (this._chartInstance) {
+      const seriesData = this._graphData[0].map((ts, i) => ({
+        x: ts * 1000,
+        y: this._graphData[1][i] ?? null
+      }))
+      this._chartInstance.updateSeries([{ data: seriesData }])
+    }
   }
 
   updateServerRankIndex (rankIndex) {
     this.rankIndex = rankIndex
-
     document.getElementById(`ranking_${this.serverId}`).innerText = `#${rankIndex + 1}`
   }
 
   _renderValue (prefix, handler) {
     const labelElement = document.getElementById(`${prefix}_${this.serverId}`)
-
     labelElement.style.display = 'block'
 
     const valueElement = document.getElementById(`${prefix}-value_${this.serverId}`)
@@ -216,7 +189,6 @@ export class ServerRegistration {
 
   _hideValue (prefix) {
     const element = document.getElementById(`${prefix}_${this.serverId}`)
-
     element.style.display = 'none'
   }
 
@@ -234,7 +206,6 @@ export class ServerRegistration {
           element.innerText = formatNumber(ping.recordData.playerCount)
         }
       })
-
       this.lastRecordData = ping.recordData
     }
 
@@ -243,7 +214,6 @@ export class ServerRegistration {
         element.innerText = formatNumber(ping.graphPeakData.playerCount)
         element.title = `At ${formatTimestampSeconds(ping.graphPeakData.timestamp)}`
       })
-
       this.lastPeakData = ping.graphPeakData
     }
 
@@ -252,21 +222,14 @@ export class ServerRegistration {
       this._renderValue('error', ping.error.message)
     } else if (typeof ping.playerCount !== 'number') {
       this._hideValue('player-count')
-
-      // If the frontend has freshly connection, and the server's last ping was in error, it may not contain an error object
-      // In this case playerCount will safely be null, so provide a generic error message instead
       this._renderValue('error', 'Failed to ping')
     } else if (typeof ping.playerCount === 'number') {
       this._hideValue('error')
       this._renderValue('player-count', formatNumber(ping.playerCount))
     }
 
-    // An updated favicon has been sent, update the src
     if (ping.favicon) {
       const faviconElement = document.getElementById(`favicon_${this.serverId}`)
-
-      // Since favicons may be URLs, only update the attribute when it has changed
-      // Otherwise the browser may send multiple requests to the same URL
       if (faviconElement.getAttribute('src') !== ping.favicon) {
         faviconElement.setAttribute('src', ping.favicon)
       }
@@ -295,7 +258,6 @@ export class ServerRegistration {
       <div class="column column-graph" id="chart_${this.serverId}"></div>`
 
     serverElement.setAttribute('class', 'server')
-
     document.getElementById('server-list').appendChild(serverElement)
   }
 

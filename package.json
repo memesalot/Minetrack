@@ -3,12 +3,13 @@
   "version": "5.6.1",
   "description": "A Minecraft server tracker that lets you focus on the basics.",
   "dependencies": {
+    "compression": "^1.7.4",
     "finalhandler": "^1.1.2",
     "mcpe-ping-fixed": "0.0.3",
     "mcping-js": "^1.4.1",
     "serve-static": "^1.16.2",
     "better-sqlite3": "^11.6.0",
-    "uplot": "1.0.11",
+    "apexcharts": "^3.45.1",
     "winston": "^2.4.4",
     "ws": "^7.5.10"
   },

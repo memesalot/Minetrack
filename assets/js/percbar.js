@@ -54,18 +54,28 @@ export class PercentageBar {
   }
 
   handleMouseOver = (event) => {
-    const serverId = parseInt(event.target.getAttribute('minetrack-server-id'))
-    const serverRegistration = this._app.serverRegistry.getServerRegistration(serverId)
+    this._currentServerId = parseInt(event.target.getAttribute('minetrack-server-id'))
+    this._updateTooltip(event)
+    event.target.addEventListener('mousemove', this._handleMouseMove, false)
+  }
+
+  _handleMouseMove = (event) => {
+    this._updateTooltip(event)
+  }
+
+  _updateTooltip = (event) => {
+    const serverRegistration = this._app.serverRegistry.getServerRegistration(this._currentServerId)
     const safeName = escapeHtml(serverRegistration.data.name)
 
-    this._app.tooltip.set(event.target.offsetLeft, event.target.offsetTop, 10, this._parent.offsetTop + this._parent.offsetHeight + 10,
+    this._app.tooltip.set(event.clientX, event.clientY, 15, 15,
       `${typeof serverRegistration.rankIndex !== 'undefined' ? `#${serverRegistration.rankIndex + 1} ` : ''}
       ${safeName}<br>
       ${formatNumber(serverRegistration.playerCount)} Players<br>
       <strong>${formatPercent(serverRegistration.playerCount, this._app.getTotalPlayerCount())}</strong>`)
   }
 
-  handleMouseOut = () => {
+  handleMouseOut = (event) => {
+    event.target.removeEventListener('mousemove', this._handleMouseMove, false)
     this._app.tooltip.hide()
   }
 
