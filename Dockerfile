@@ -1,25 +1,26 @@
-FROM node:16
+FROM node:20
 
-# install tini and sqlite3 from distro packages
-RUN apt-get update                                                           \
- && apt-get install    --quiet --yes --no-install-recommends sqlite3 tini    \
- && apt-get clean      --quiet --yes                                         \
- && apt-get autoremove --quiet --yes                                         \
+RUN apt-get update                                                                                 \
+ && apt-get install    --quiet --yes --no-install-recommends sqlite3 tini python3 build-essential  \
+ && apt-get clean      --quiet --yes                                                               \
+ && apt-get autoremove --quiet --yes                                                               \
  && rm -rf /var/lib/apt/lists/*
 
-# copy minetrack files
 WORKDIR /usr/src/minetrack
+
+COPY package*.json ./
+RUN npm ci --include=dev --build-from-source
+
 COPY . .
+RUN npm run build \
+ && npm prune --production
 
-# build minetrack
-RUN npm install --build-from-source \
- && npm run build
-
-# run as non root
 RUN addgroup --gid 10043 --system minetrack \
  && adduser  --uid 10042 --system --ingroup minetrack --no-create-home --gecos "" minetrack \
  && chown -R minetrack:minetrack /usr/src/minetrack
 USER minetrack
+
+ENV NODE_ENV=production
 
 EXPOSE 8080
 

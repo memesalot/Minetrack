@@ -42,22 +42,18 @@ For updates and release notes, please read the [CHANGELOG](docs/CHANGELOG.md).
 
 ## Installation
 1. Node 14+ is required (we use better-sqlite3, which ships native bindings).
-2. Configure `config.json`:
-   - `database.type`: `sqlite` (default) or `mysql`
-   - `database.sqlite.filename`: SQLite file name
-   - `database.mysql.{host,port,user,password,database,connectionLimit}`: MySQL settings
-   - `logToDatabase`: true/false (enable historical graph logging)
-   - `trustProxy`: set to true when running behind Nginx/Cloudflare so real client IPs are logged
-   - `allowedOrigins`: optional allowlist for WebSocket origins
-   - `connectionLimits`, `wsRateLimits`, `wsMaxPayload`, `httpTimeout`, `httpHeadersTimeout`, `httpKeepAliveTimeout`: operational hardening
-3. Add/remove servers by editing `servers.json`.
-4. Run `npm install` (native build will compile better-sqlite3).
+2. Configure via env vars or `config.json`:
+   - `DB_TYPE` (`sqlite`/`mysql`), `SQLITE_FILENAME`, `MYSQL_{HOST,PORT,USER,PASSWORD,DATABASE,CONNECTION_LIMIT}`
+   - `LOG_TO_DATABASE`, `TRUST_PROXY`, `ALLOWED_ORIGINS`, `SITE_PORT`, `SITE_IP`
+   - `CONNECTION_MAX_PER_IP`, `CONNECTION_MAX_TOTAL`, `WS_MAX_MESSAGES`, `WS_WINDOW_MS`, `WS_MAX_PAYLOAD`
+3. Configure servers with `SERVERS_JSON` / `SERVERS_FILE` or edit `servers.json`.
+4. Run `npm ci` (native build will compile better-sqlite3).
 5. Run `npm run build` (bundles `assets/` into `dist/`).
 6. Run `node main.js` to boot the system.
 
 (There's also ```install.sh``` and ```start.sh```, but they may not work for your OS.)
 
-Database logging is controlled by `logToDatabase` and the `database` block. For SQLite, no extra setup beyond the native build is required; for MySQL, ensure your credentials are correct and the database exists.
+All config keys still default to `config.json` if the corresponding env var is not set. Database logging is controlled by `logToDatabase` and the `database` block. For SQLite, no extra setup beyond the native build is required; for MySQL, ensure your credentials are correct and the database exists.
 
 ## Docker
 Minetrack can be built and run with Docker from this repository in several ways:
@@ -76,14 +72,44 @@ The published port can be changed by modifying the parameter argument, e.g.:
 * Publish to host port 8080: `--publish 8080:8080`  
 * Publish to localhost (thus prohibiting external access): `--publish 127.0.0.1:8080:8080`
 
-### Build and deploy with docker-compose
+### Build and deploy with docker compose
 ```
-# build and start service
-docker-compose up --build
+# build (image name comes from docker-compose.yml)
+docker compose build
+
+# start service
+docker compose up -d
 
 # stop service and remove artifacts
-docker-compose down
+docker compose down
 ```
+
+Example `docker-compose.yml` snippet with env-driven config:
+```
+services:
+  minetrack:
+    image: verycooldocker/minetrack:latest
+    build: .
+    environment:
+      SITE_PORT: 8080
+      LOG_TO_DATABASE: "false"
+      DB_TYPE: sqlite
+      SQLITE_FILENAME: /data/database.sql
+      ALLOWED_ORIGINS: http://localhost:8080
+      SERVERS_JSON: '[{"name":"Hypixel","ip":"mc.hypixel.net","type":"PC"}]'
+    ports:
+      - "8080:8080"
+    volumes:
+      - minetrack_data:/data
+    restart: unless-stopped
+volumes:
+  minetrack_data:
+```
+
+### Publish to Docker Hub
+1. Image is set to `verycooldocker/minetrack:latest` in `docker-compose.yml`. Change the tag if you want a versioned release.
+2. Build: `docker compose build` (or `docker build -t verycooldocker/minetrack:latest .`).
+3. Push: `docker compose push` (or `docker push verycooldocker/minetrack:latest`).
 
 ## Nginx reverse proxy
 The following configuration enables Nginx to act as reverse proxy for a Minetrack instance that is available at port 8080 on localhost:

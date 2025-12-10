@@ -1,12 +1,22 @@
-version: '3'
+version: '3.8'
 
 services:
   minetrack:
+    image: verycooldocker/minetrack:latest
     build: .
     container_name: minetrack
-    dns:
-      - 8.8.8.8
-      - 1.1.1.1
+    environment:
+      SITE_PORT: 8080
+      LOG_TO_DATABASE: "false"
+      DB_TYPE: sqlite
+      SQLITE_FILENAME: /data/database.sql
+      ALLOWED_ORIGINS: http://localhost:8080
+      SERVERS_JSON: '[{"name":"Hypixel","ip":"mc.hypixel.net","type":"PC"}]'
     ports:
-      - "80:8080"
-    restart: always
+      - "8080:8080"
+    volumes:
+      - minetrack_data:/data
+    restart: unless-stopped
+
+volumes:
+  minetrack_data:
