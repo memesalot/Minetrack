@@ -17,6 +17,7 @@
         "requireConfigFile": false
     },
     "rules": {
+        "eol-last": 0
     },
     "parser": "@babel/eslint-parser"
 }

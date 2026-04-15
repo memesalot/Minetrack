@@ -30,6 +30,10 @@
 	"graphDuration": 43200000,
 	"serverGraphDuration": 180000,
 	"trustProxy": false,
+	"trustedProxies": [
+		"127.0.0.1",
+		"::1"
+	],
 	"allowedOrigins": [],
 	"connectionLimits": {
 		"maxPerIp": 20,

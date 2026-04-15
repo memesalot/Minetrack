@@ -69,6 +69,7 @@ const config = {
   graphDurationLabel: toString('GRAPH_DURATION_LABEL', defaults.graphDurationLabel),
   serverGraphDuration: toNumber('SERVER_GRAPH_DURATION', defaults.serverGraphDuration || 180000),
   trustProxy: toBool('TRUST_PROXY', defaults.trustProxy || false),
+  trustedProxies: toArray('TRUSTED_PROXIES', defaults.trustedProxies || []),
   allowedOrigins: toArray('ALLOWED_ORIGINS', defaults.allowedOrigins || []),
   connectionLimits: {
     ...(defaults.connectionLimits || {}),

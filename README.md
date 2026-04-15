@@ -44,7 +44,7 @@ For updates and release notes, please read the [CHANGELOG](docs/CHANGELOG.md).
 1. Node 14+ is required (we use better-sqlite3, which ships native bindings).
 2. Configure via env vars or `config.json`:
    - `DB_TYPE` (`sqlite`/`mysql`), `SQLITE_FILENAME`, `MYSQL_{HOST,PORT,USER,PASSWORD,DATABASE,CONNECTION_LIMIT}`
-   - `LOG_TO_DATABASE`, `TRUST_PROXY`, `ALLOWED_ORIGINS`, `SITE_PORT`, `SITE_IP`
+   - `LOG_TO_DATABASE`, `TRUST_PROXY`, `TRUSTED_PROXIES`, `ALLOWED_ORIGINS`, `SITE_PORT`, `SITE_IP`
    - `CONNECTION_MAX_PER_IP`, `CONNECTION_MAX_TOTAL`, `WS_MAX_MESSAGES`, `WS_WINDOW_MS`, `WS_MAX_PAYLOAD`
 3. Configure servers with `SERVERS_JSON` / `SERVERS_FILE` or edit `servers.json`.
 4. Run `npm ci` (native build will compile better-sqlite3).
@@ -54,6 +54,8 @@ For updates and release notes, please read the [CHANGELOG](docs/CHANGELOG.md).
 (There's also ```install.sh``` and ```start.sh```, but they may not work for your OS.)
 
 All config keys still default to `config.json` if the corresponding env var is not set. Database logging is controlled by `logToDatabase` and the `database` block. For SQLite, no extra setup beyond the native build is required; for MySQL, ensure your credentials are correct and the database exists.
+
+If you enable `TRUST_PROXY`, also set `TRUSTED_PROXIES` to the IPs or CIDR ranges of the reverse proxies that are allowed to supply forwarded client IP headers. The default trusted list only covers loopback proxies (`127.0.0.1`, `::1`).
 
 ## Docker
 Minetrack can be built and run with Docker from this repository in several ways:
